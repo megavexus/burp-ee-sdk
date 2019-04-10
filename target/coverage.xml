@@ -8,13 +8,13 @@
 	<packages>
 		<package branch-rate="0" complexity="0" line-rate="0.8545" name=".tox.py36.lib.python3.6.site-packages.burp_enterprise_sdk">
 			<classes>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/__init__.py" line-rate="1" name="__init__.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/__init__.py" line-rate="1" name="__init__.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/abstract.py" line-rate="0.6667" name="abstract.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/abstract.py" line-rate="0.6667" name="abstract.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -31,7 +31,7 @@
 						<line hits="0" number="17"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/burp_sdk.py" line-rate="1" name="burp_sdk.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/burp_sdk.py" line-rate="1" name="burp_sdk.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -52,7 +52,7 @@
 						<line hits="1" number="21"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/connection.py" line-rate="0.8462" name="connection.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/connection.py" line-rate="0.8462" name="connection.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -87,7 +87,7 @@
 		</package>
 		<package branch-rate="0" complexity="0" line-rate="1" name=".tox.py36.lib.python3.6.site-packages.burp_enterprise_sdk.endpoints">
 			<classes>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/endpoints/__init__.py" line-rate="1" name="__init__.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/endpoints/__init__.py" line-rate="1" name="__init__.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -95,7 +95,7 @@
 						<line hits="1" number="3"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/endpoints/issues.py" line-rate="1" name="issues.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/endpoints/issues.py" line-rate="1" name="issues.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -103,7 +103,7 @@
 						<line hits="1" number="4"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/endpoints/scans.py" line-rate="1" name="scans.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/endpoints/scans.py" line-rate="1" name="scans.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
@@ -111,7 +111,7 @@
 						<line hits="1" number="4"/>
 					</lines>
 				</class>
-				<class branch-rate="0" complexity="0" filename="src/burp_enterprise_sdk/endpoints/sites.py" line-rate="1" name="sites.py">
+				<class branch-rate="0" complexity="0" filename=".tox/py36/lib/python3.6/site-packages/burp_enterprise_sdk/endpoints/sites.py" line-rate="1" name="sites.py">
 					<methods/>
 					<lines>
 						<line hits="1" number="1"/>
