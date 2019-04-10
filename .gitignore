@@ -1,1 +1,9 @@
 burp.conf
+.venv
+.eggs
+*.egg-info
+__pycache__
+*.pyc
+.coverage
+.tox
+.pytest_cache

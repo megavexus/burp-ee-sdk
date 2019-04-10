@@ -14,7 +14,7 @@ REQUIREMENTS_TEST = [str(ir.req) for ir in parse_requirements(
     'requirements-test.txt',  session=False)]
 
 setup(
-    name='burp-ee-sdk',
+    name='burp-enterprise-sdk',
     version='0.1',
     description='Burp Enterprise SDK',
 
