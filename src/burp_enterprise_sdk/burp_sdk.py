@@ -19,15 +19,33 @@ class BurpApi(object):
 
 
 """
-- Crear una Folder:
+- Crear una Folder o SITE:
 <<< REQUEST
-POST /api-internal/sites/
+POST /api-internal/sites/<ID_PARENT>
 Authorization: <TOKEN>
 Accept: */*
 Accept-Language: en-US,en;q=0.5
 Content-Type: application/json
 
-{"version":null,"name":"ENTIDAD_XY"}
+--<FOLDER>--
+{"version":null,"name":"ENTIDAD_XY", "parent_id": "<ID_PARENT>"}
+
+--<SITE>--
+{
+    "name": "gato2.com",
+    "parent_id": "1",
+    "version": N,
+    "urls": ["gato.com"],
+    "excluded_urls": [],
+    "credentials": [{
+        "password": "asdfg",
+        "label": "1",
+        "username": "asdfg"
+    }],
+    "scan_configuration_ids": [
+        "06f9a9d4-6e5a-48e1-8305-c6c45775b5f3"
+    ]
+}
 
 
 <<< RESPONSE

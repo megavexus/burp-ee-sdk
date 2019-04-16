@@ -21,6 +21,11 @@ class Connection(object):
         response = self.session.post(url, params=params, data=data, headers=headers)
         return self.process_response(response)
 
+    def delete_request(self, uri, params={}, data={}, headers={}):
+        url = self.make_url(uri)
+        response = self.session.delete(url, params=params, data=data, headers=headers)
+        return self.process_response(response)
+
     def make_url(self, uri):
         url = "{}{}".format(self.url, uri)
         return url
