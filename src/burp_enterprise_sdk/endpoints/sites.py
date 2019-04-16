@@ -72,13 +72,16 @@ class SitesApi(AbstractEndpointApi):
 
     def create_folder(self, name, id_parent=None):
         data = {
-            "version": null,
-            "name": name
+            "name": name,
+            "version": 0
         }
+
         if id_parent:
             data['parent_id'] = id_parent
-        
-        ret = super.post(
+
+        if id_parent == None:
+            id_parent = ""
+        ret = super().post(
             id=id_parent,
             data=data
         )
@@ -101,22 +104,51 @@ class SitesApi(AbstractEndpointApi):
             ]
         }
 
-        ret = super.post(
+        ret = super().post(
             id=id_parent,
             data=data
         )
         return ret
-    
+
+
     def update_folder(self, id, name=None, id_parent=None):
-        """
+        return self.update_site(id, name, id_parent)
 
-        """
 
-    def update_site(self, id, name=None, id_parent=None, urls=[], excluded_urls=[], scan_configuration_ids = [], credentials = []):
-        """
-    
-        """
-        pass
+    def update_site(self, id, name=None, id_parent=None, urls=None, excluded_urls=None, scan_configuration_ids = None, credentials = None):
+        existent_data = self.get(id)
+        version = existent_data['version'] + 1
 
-    def delete(self, id):
-        super.delete(id)
+        data = {}
+        if name:
+            data["name"] = name
+        if id_parent:
+            data["id_parent"] = id_parent
+        if urls:
+            if type(urls) != list:
+                raise TypeError("Type of urls parameter must be a list of urls")
+            data["urls"] = urls
+        if excluded_urls:
+            if type(excluded_urls) != list:
+                raise TypeError("Type of excluded_urls parameter must be a list of urls")
+            data["excluded_urls"] = excluded_urls
+        if scan_configuration_ids:
+            if type(scan_configuration_ids) != list:
+                raise TypeError("Type of scan_configuration_ids parameter must be a list of ids")
+            data["scan_configuration_ids"] = scan_configuration_ids
+        if credentials:
+            if type(credentials) != list:
+                raise TypeError("Type of credentials parameter must be a list of credentials")
+            data["credentials"] = [
+                {
+                    "label": credential['label'],
+                    "password": credential['password'],
+                    "admin": credential['admin'],
+                } for credential in credentials
+            ]
+
+        ret = super().post(
+            id=id,
+            data=data
+        )
+        return ret

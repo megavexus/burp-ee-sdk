@@ -1,4 +1,5 @@
 from requests import request, Session
+import json
 
 class Connection(object):
     def __init__(self, url, token, version):
@@ -18,13 +19,14 @@ class Connection(object):
         
     def post_request(self, uri, params={}, data={}, headers={}):
         url = self.make_url(uri)
-        response = self.session.post(url, params=params, data=data, headers=headers)
+        payload = json.dumps(data)
+        response = self.session.post(url, params=params, data=payload, headers=headers)
         return self.process_response(response)
 
     def delete_request(self, uri, params={}, data={}, headers={}):
         url = self.make_url(uri)
         response = self.session.delete(url, params=params, data=data, headers=headers)
-        return self.process_response(response)
+        return response.status_code == 204
 
     def make_url(self, uri):
         url = "{}{}".format(self.url, uri)

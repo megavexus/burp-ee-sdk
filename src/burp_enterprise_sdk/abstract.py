@@ -35,5 +35,5 @@ class AbstractEndpointApi(object):
             raise NotImplementedError()
         uri = self.ENDPOINT_DELETE + str(id)
         res = self.connection.delete_request(uri)
-        return res.get("data")
+        return res
 

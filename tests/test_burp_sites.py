@@ -56,13 +56,21 @@ class TestSites():
         have_sites = len(sites) > 0
         assert have_sites == expected
 
-    @pytest.mark.skip
-    def test_create_folder(self):
-        pass
+    def test_create_folder(self, burp_api):
+        folder_name = "test_create"
+        data = burp_api.sites.create_folder(folder_name)
+        assert 'id' in data
+        burp_api.sites.delete(data['id'])
 
-    @pytest.mark.skip
-    def test_create_subfolder(self):
-        pass
+    def test_create_subfolder(self, burp_api):
+        folder_name = "test_create"
+        data = burp_api.sites.create_folder(folder_name)
+        id_parent = data['id']
+        folder_name = "test_create_subfolder"
+        data = burp_api.sites.create_folder(folder_name, id_parent=id_parent)
+        assert 'id' in data
+
+        assert burp_api.sites.delete(id_parent)
 
     @pytest.mark.skip
     def test_create_site(self):
@@ -73,5 +81,19 @@ class TestSites():
         pass
 
     @pytest.mark.skip
-    def test_delete_site(self):
+    def test_update_site(self):
         pass
+    
+    @pytest.mark.skip
+    def test_update_site_fail(self):
+        pass
+
+    def test_delete_folder(self, burp_api):
+        data = burp_api.sites.create_folder("test_delete")
+        assert 'id' in data
+
+        is_del = burp_api.sites.delete(data['id'])
+        assert is_del == True
+
+        data = burp_api.sites.get(data['id'])
+        assert data == {}
