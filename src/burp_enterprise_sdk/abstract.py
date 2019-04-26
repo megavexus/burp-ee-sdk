@@ -1,7 +1,6 @@
 from .connection import Connection
 
 class AbstractEndpointApi(object):
-
     ENDPOINT_GET = None
     ENDPOINT_LIST = None
     ENDPOINT_POST = None
@@ -23,11 +22,14 @@ class AbstractEndpointApi(object):
         res = self.connection.get_request(uri)
         return res.get("data")
 
-    def post(self, id, data, id_parent=None):
+    def post(self, id, data, id_parent=None, is_update=False):
         if not self.ENDPOINT_POST:
             raise NotImplementedError()
         uri = self.ENDPOINT_POST + str(id)
-        res = self.connection.post_request(uri, data=data)
+        headers = None
+        if is_update:
+            headers = {"Content-Type": "application/merge-patch+json"}
+        res = self.connection.post_request(uri, data=data, headers=headers)
         return res.get("data")
 
     def delete(self, id):
