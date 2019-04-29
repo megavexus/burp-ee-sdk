@@ -12,14 +12,16 @@ class AbstractEndpointApi(object):
     def list(self):
         return self.get()
 
-    def get(self, id=None):
+    def get(self, id=None, uri=None, params=None):
         if not self.ENDPOINT_GET:
             raise NotImplementedError()
 
-        uri = self.ENDPOINT_GET
-        if id != None:
-            uri += str(id)
-        res = self.connection.get_request(uri)
+        if not uri:
+            uri = self.ENDPOINT_GET
+            if id != None:
+                uri += str(id)
+        
+        res = self.connection.get_request(uri, params)
         return res.get("data")
 
     def post(self, id, data, id_parent=None, is_update=False):
@@ -38,4 +40,3 @@ class AbstractEndpointApi(object):
         uri = self.ENDPOINT_DELETE + str(id)
         res = self.connection.delete_request(uri)
         return res
-
