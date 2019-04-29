@@ -1,6 +1,7 @@
 import pytest 
 
 class TestSites():
+    
     def test_list_sites(self, burp_api):
         sites = burp_api.sites.list()
         assert len(sites) > 0
