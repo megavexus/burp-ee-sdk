@@ -1,6 +1,6 @@
 from burp_enterprise_sdk.abstract import AbstractEndpointApi
 from requests.exceptions import HTTPError
-import logging
+
 class SitesApi(AbstractEndpointApi):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -49,7 +49,6 @@ class SitesApi(AbstractEndpointApi):
         name = str(name).lower().strip()
         for site in tree:
             site_name = site['name'].lower().strip()
-            logging.info("{} == {}".format(site_name, name))
             if exact_match:
                 if name == site_name:
                     return site
@@ -58,6 +57,7 @@ class SitesApi(AbstractEndpointApi):
                 results.append(site)
       
         return results
+
 
     def get_childrens(self, id):
         sites = self.list_plain()
@@ -70,6 +70,7 @@ class SitesApi(AbstractEndpointApi):
         childrens = target_site.get('children', [])
         return childrens
 
+
     def create_folder(self, name, id_parent=None):
         data = {
             "name": name,
@@ -81,28 +82,39 @@ class SitesApi(AbstractEndpointApi):
 
         if id_parent == None:
             id_parent = ""
+
         ret = super().post(
             id=id_parent,
             data=data
         )
         return ret
 
-    def create_site(self, name, id_parent, urls=[], excluded_urls=[], scan_configuration_ids = [], credentials = []):
+
+    def create_site(self, name, urls, id_parent=None, excluded_urls=[], scan_configuration_ids = [], credentials = []):
+        """
+        Scan_config_ids:
+           - minimize false positives: 06f9a9d4-6e5a-48e1-8305-c6c45775b5f3
+           - critical only: 79f11341-7d81-4a37-a090-4169eff55cd7
+        """
+        if type(urls) != list or len(urls) == 0:
+            raise Exception("There must be URLS in array format ['url1', 'url2']: {}".format(urls))   
+        
         data = {
             "version": 0,
             "name": name,
             "parent_id": id_parent,
             "urls": urls,
             "excluded_urls": excluded_urls,
-            "scan_configuration_ids": scan_configuration_ids,
-            "credentials": [
+            "scan_configuration_ids": scan_configuration_ids
+        }
+        if credentials:
+            data["credentials"] = [
                 {
                     "label": credential['label'],
                     "password": credential['password'],
-                    "admin": credential['admin'],
+                    "username": credential['username']
                 } for credential in credentials
             ]
-        }
 
         ret = super().post(
             id=id_parent,
@@ -117,38 +129,46 @@ class SitesApi(AbstractEndpointApi):
 
     def update_site(self, id, name=None, id_parent=None, urls=None, excluded_urls=None, scan_configuration_ids = None, credentials = None):
         existent_data = self.get(id)
-        version = existent_data['version'] + 1
-
         data = {}
+
         if name:
             data["name"] = name
+
         if id_parent:
             data["id_parent"] = id_parent
+
         if urls:
             if type(urls) != list:
                 raise TypeError("Type of urls parameter must be a list of urls")
             data["urls"] = urls
+
         if excluded_urls:
             if type(excluded_urls) != list:
                 raise TypeError("Type of excluded_urls parameter must be a list of urls")
             data["excluded_urls"] = excluded_urls
+
         if scan_configuration_ids:
             if type(scan_configuration_ids) != list:
                 raise TypeError("Type of scan_configuration_ids parameter must be a list of ids")
             data["scan_configuration_ids"] = scan_configuration_ids
-        if credentials:
+
+        if credentials != None:
             if type(credentials) != list:
                 raise TypeError("Type of credentials parameter must be a list of credentials")
             data["credentials"] = [
                 {
                     "label": credential['label'],
                     "password": credential['password'],
-                    "admin": credential['admin'],
+                    "username": credential['username']
                 } for credential in credentials
             ]
 
         ret = super().post(
             id=id,
-            data=data
+            data=data,
+            is_update=True
         )
-        return ret
+        if ret == None:
+            return True
+        else:
+            raise Exception("{} - {}".format(ret['code'], ret['error']))

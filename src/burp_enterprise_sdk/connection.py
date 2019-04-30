@@ -17,10 +17,30 @@ class Connection(object):
         response = self.session.get(url, params=params, data=data, headers=headers)
         return self.process_response(response)
         
+
     def post_request(self, uri, params={}, data={}, headers={}):
         url = self.make_url(uri)
         payload = json.dumps(data)
+        if headers:
+            for key, value in headers.items():
+                self.session.headers[key] = value
+
         response = self.session.post(url, params=params, data=payload, headers=headers)
+        return self.process_response(response)
+        
+
+    def put_request(self, uri, params={}, data={}, headers={}):
+        url = self.make_url(uri)
+        if data:
+            payload = json.dumps(data)
+        else:
+            payload = None
+
+        if headers:
+            for key, value in headers.items():
+                self.session.headers[key] = value
+
+        response = self.session.put(url, params=params, data=payload, headers=headers)
         return self.process_response(response)
 
     def delete_request(self, uri, params={}, data={}, headers={}):
@@ -36,8 +56,10 @@ class Connection(object):
         if response.status_code > 400:
             response.raise_for_status()
         else:
-            return {
+            ret = {
                 "code": response.status_code,
-                "reason": response.reason,
-                "data": response.json()
+                "reason": response.reason
             }
+            if len(response.content):
+                ret["data"] = response.json()
+            return ret
