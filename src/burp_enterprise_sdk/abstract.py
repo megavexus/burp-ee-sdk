@@ -24,10 +24,12 @@ class AbstractEndpointApi(object):
         res = self.connection.get_request(uri, params)
         return res.get("data")
 
-    def post(self, id, data, id_parent=None, is_update=False):
-        if not self.ENDPOINT_POST:
-            raise NotImplementedError()
-        uri = self.ENDPOINT_POST + str(id)
+    def post(self, id=None, data=None, id_parent=None, uri=None, is_update=False):
+        if not uri:
+            if not self.ENDPOINT_POST:
+                raise NotImplementedError()
+            uri = self.ENDPOINT_POST + str(id)
+
         headers = None
         if is_update:
             headers = {"Content-Type": "application/merge-patch+json"}
@@ -42,7 +44,7 @@ class AbstractEndpointApi(object):
         if not uri:
             uri = self.ENDPOINT_PUT + str(id)
 
-        res = self.connection.post_request(uri, data=data, headers=headers)
+        res = self.connection.put_request(uri, data=data)
         return res.get("data")
 
 
