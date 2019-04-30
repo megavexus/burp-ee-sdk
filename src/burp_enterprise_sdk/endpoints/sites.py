@@ -167,30 +167,3 @@ class SitesApi(AbstractEndpointApi):
             is_update=True
         )
         return ret
-
-"""
-    def _get_page_scans(self, id, page=0):
-        uri = "{}{}/scan_summaries".format(self.ENDPOINT_GET, id)
-        params = {
-            "page": page
-        }
-        ret = super().get(
-            uri=uri,
-            params=params
-        )
-        return ret
-
-    def get_scans(self, id):
-        ret = self._get_page_scans(id)
-        page = ret["page"]
-        page_size = ret["page_size"]
-        results = ret['rows']
-        num_scans = len(results)
-        while num_scans == page_size:
-            page += 1
-            ret = self._get_page_scans(id, page)
-            results = results + ret['rows']
-            num_scans = len(ret['rows'])
-
-        return results
-"""

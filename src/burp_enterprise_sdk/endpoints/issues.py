@@ -1,5 +1,6 @@
 from burp_enterprise_sdk.abstract import AbstractEndpointApi
 from burp_enterprise_sdk.utils.enum import OrderedEnum
+from burp_enterprise_sdk.utils.str_utils import normalize
 
 class SeverityLevel(OrderedEnum):
     HIGH = 3
@@ -11,9 +12,6 @@ class ConfidenceLevel(OrderedEnum):
     CERTAIN = 2
     FIRM = 1
     TENTATIVE = 0
-
-def normalize(text):
-    return text.upper().strip()
 
     
 class IssuesApi(AbstractEndpointApi):
