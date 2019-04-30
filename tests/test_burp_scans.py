@@ -1,6 +1,6 @@
 import pytest
 from requests.exceptions import HTTPError
-from datetime import datetime
+from datetime import datetime, timedelta
 from burp_enterprise_sdk.endpoints.scans import ScanProgrammingException
 class TestScans():
     
@@ -50,44 +50,97 @@ class TestScans():
 
 
     @pytest.mark.parametrize("frecuency, interval, week_day, until, count, expected", [
-        ("DAYLY", 5, None, None, None, "FREQ=DAYLY,INTERVAL=5"),
-        ("DAYLY", 6, None, None, 5, "FREQ=DAYLY,INTERVAL=6,COUNT=5"),
-        ("YEARLY", 6, None, datetime(2023, 5, 3, 15, 30, 21), None, "FREQ=YEARLY,INTERVAL=6,UNTIL=20230503T153021Z"),
-        ("WEEKLY", 6, ["MON", "TUESDAY"], datetime(2023, 5, 3, 0, 0, 0), None, "FREQ=WEEKLY,INTERVAL=6,BYDAY=MON,TUE,UNTIL=20230503T000000Z"),
+        ("DAILY", 5, None, None, None, "FREQ=DAILY;INTERVAL=5"),
+        ("DAILY", 6, None, None, 5, "FREQ=DAILY;INTERVAL=6;COUNT=5"),
+        ("YEARLY", 6, None, datetime(2023, 5, 3, 15, 30, 21), None, "FREQ=YEARLY;INTERVAL=6;UNTIL=20230503T153021Z"),
+        ("WEEKLY", 6, ["MON", "TUESDAY"], datetime(2023, 5, 3, 0, 0, 0), None, "FREQ=WEEKLY;INTERVAL=6;BYDAY=MO,TU;UNTIL=20230503T000000Z"),
     ])
     def test_program_data_config_rrlues(self, burp_api, frecuency, interval, week_day, until, count, expected):
         config = burp_api.scans._get_program_data_config(None, frecuency, interval, week_day, until, count)
-        rrules = config['rrules']
-        assert rrules == expected
+        rrule = config['rrule']
+        assert rrule == expected
 
     @pytest.mark.parametrize("frecuency, interval, week_day, until, count", [
-        ("ADAYLY", 5, None, None, None),
-        ("DAYLY", None, None, None, None),
-        ("DAYLY", "A", None, None, None),
+        ("ADAILY", 5, None, None, None),
+        ("DAILY", None, None, None, None),
+        ("DAILY", "A", None, None, None),
         ("WEEKLY", 3, None, None, None),
     ])
     def test_program_data_config_rrlues_error(self, burp_api, frecuency, interval, week_day, until, count):
         with pytest.raises(ScanProgrammingException):
             config = burp_api.scans._get_program_data_config(None, frecuency, interval, week_day, until, count)
 
-    @pytest.mark.skip
-    def test_create_scan(self, burp_api):
-        pass
+    @pytest.mark.parametrize("site_id, scan_configuration_expected", [
+        (9, ["06f9a9d4-6e5a-48e1-8305-c6c45775b5f3"]),
+        (7, []),
+    ])
+    def test_create_scan(self, burp_api, site_id, scan_configuration_expected):
+        scan = burp_api.scans.create(site_id)
+        assert 'id' in scan
+        assert scan['scan_configuration_ids'] == scan_configuration_expected
+        burp_api.scans.delete(scan['id'])
 
-    @pytest.mark.skip
-    def test_program_scan(self, burp_api):
-        pass
 
-    @pytest.mark.skip
-    def test_start_scan(self, burp_api):
-        pass
-
-    @pytest.mark.skip
-    def test_stop_scan(self, burp_api):
-        pass
-    
-    @pytest.mark.skip
     def test_delete_scan(self, burp_api):
-        pass
+        scan = burp_api.scans.create(9)
+        assert 'id' in scan
+        scan_get1 = burp_api.scans.get(scan['id'])
+        assert 'id' in scan_get1
 
-    
+        burp_api.scans.delete(scan['id'])
+        scan_get_delete = burp_api.scans.get(scan['id'])
+        assert scan_get_delete['code'] == 41
+
+    @pytest.mark.parametrize("frecuency, interval, week_day, until, count, expected", [
+        ("DAILY", 5, None, None, None, "FREQ=DAILY;INTERVAL=5"),
+        ("DAILY", 6, None, None, 5, "FREQ=DAILY;INTERVAL=6;COUNT=5"),
+        ("YEARLY", 6, None, datetime(2023, 5, 3, 15, 30, 21), None, "FREQ=YEARLY;INTERVAL=6;UNTIL=20230503T153021Z"),
+        ("WEEKLY", 6, ["MON", "TUESDAY"], datetime(2023, 5, 3, 0, 0, 0), None, "FREQ=WEEKLY;INTERVAL=6;BYDAY=MO,TU;UNTIL=20230503T000000Z"),
+    ])
+    def test_program_scan(self, burp_api, frecuency, interval, week_day, until, count, expected):
+        scan = burp_api.scans.create(9)
+        scan_get1 = burp_api.scans.get(scan['id'])
+        assert 'id' in scan_get1
+
+        # Se le reprograma
+        now_date = datetime.now()
+        start_time = datetime.now() + timedelta(days=1)
+        start_expected = start_time.strftime("%Y-%m-%dT%T.000Z")
+        assert burp_api.scans.program(scan['id'], start=start_time, frecuency=frecuency, interval=interval, week_days=week_day, until=until, count=count)
+
+        scan_mod = burp_api.scans.get(scan['id'])
+        burp_api.scans.delete(scan['id'])
+
+        schedule_item = scan_mod['schedule_item']
+        assert start_expected == schedule_item['initial_run_time']
+        assert expected == schedule_item['rrule']
+
+
+    def test_start_scan(self, burp_api):
+        scan = burp_api.scans.create(9)
+        scan_get1 = burp_api.scans.get(scan['id'])
+        orig_scan_run_time = scan_get1['schedule_item']['initial_run_time'][:-1]+"000"
+        orig_scan_run_time = datetime.strptime(orig_scan_run_time, "%Y-%m-%dT%H:%M:%S.%f")
+        assert 'id' in scan_get1
+
+        assert burp_api.scans.start(scan['id'])
+        scan_get2 = burp_api.scans.get(scan['id'])
+        assert burp_api.scans.delete(scan['id'])
+
+        mod_scan_run_time = scan_get2['schedule_item']['initial_run_time'][:-1]+"000"
+        mod_scan_run_time = datetime.strptime(mod_scan_run_time, "%Y-%m-%dT%H:%M:%S.%f")
+        assert mod_scan_run_time > orig_scan_run_time
+
+        mod_scan_scheduled_time = scan_get2['schedule_item']['scheduled_run_time'][:-1]+"000"
+        mod_scan_scheduled_time = datetime.strptime(mod_scan_scheduled_time, "%Y-%m-%dT%H:%M:%S.%f")
+        assert mod_scan_run_time <= mod_scan_scheduled_time
+
+    def test_stop_scan(self, burp_api):
+        scan = burp_api.scans.create(9)
+        scan_get1 = burp_api.scans.get(scan['id'])
+        assert scan_get1['status'] in ['QUEUED', "RUNNING"]
+
+        assert burp_api.scans.stop(scan['id'])
+        scan_stopped = burp_api.scans.get(scan['id'])
+        assert burp_api.scans.delete(scan['id'])
+        assert scan_stopped['status'] == "CANCELLED"    
