@@ -58,6 +58,7 @@ class SitesApi(AbstractEndpointApi):
       
         return results
 
+
     def get_childrens(self, id):
         sites = self.list_plain()
         target_site = {}
@@ -68,6 +69,7 @@ class SitesApi(AbstractEndpointApi):
 
         childrens = target_site.get('children', [])
         return childrens
+
 
     def create_folder(self, name, id_parent=None):
         data = {
@@ -86,6 +88,7 @@ class SitesApi(AbstractEndpointApi):
             data=data
         )
         return ret
+
 
     def create_site(self, name, urls, id_parent=None, excluded_urls=[], scan_configuration_ids = [], credentials = []):
         """
@@ -117,7 +120,6 @@ class SitesApi(AbstractEndpointApi):
             id=id_parent,
             data=data
         )
-
         return ret
 
 
@@ -166,4 +168,7 @@ class SitesApi(AbstractEndpointApi):
             data=data,
             is_update=True
         )
-        return ret
+        if ret == None:
+            return True
+        else:
+            raise Exception("{} - {}".format(ret['code'], ret['error']))
