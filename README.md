@@ -16,5 +16,8 @@ pip3 install .
 ```
 
 ## Usage
+TODO
 
 ### Examples
+
+Se pueden ver ejemplos en los tests.
